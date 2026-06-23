@@ -208,6 +208,38 @@ agenticscope/
     └── sample-workspace/ # a working .scope/ project to try the commands against
 ```
 
+## Changelog
+
+I keep this log for my own reference — what shipped, what I fixed, and what others contributed. Newest first.
+
+### 0.1.0 — Initial release
+**Added**
+- The `.scope/` standard: a `agenticscope.toml` manifest mapping triggers → typed, priced fragments under a token budget.
+- CLI: `init`, `lint`, `build`, `pack`.
+- Vendor build: compile one `.scope/` source into `CLAUDE.md`, `GEMINI.md`, `AGENTS.md`, and `.cursorrules`.
+- Read-only MCP server with `list_projects`, `list_subagents`, `list_plans`, `git_status`, `grep_memory`, and `pack_context`.
+- A sample workspace under `examples/` to try the commands against.
+
+**Fixed**
+- Required Node ≥ 22 (Node 18 and 20 are end-of-life).
+- Stopped tracking the `.idea/` IDE directory.
+
+> When I fix an issue or merge a contribution, I add it here under a new version with **Added / Changed / Fixed** and link the issue or PR, e.g. `- Fixed empty-trigger crash in pack (#12, thanks @contributor)`.
+
+## Contributing
+
+Contributions are welcome.
+
+- **Found a bug or have an idea?** Open an issue: https://github.com/jessn-dev/agenticscope/issues
+- **Sending a pull request?** Fork, branch, run `npm run typecheck` before you push, and describe the change. I record merged PRs in the Changelog above.
+- **Local setup:**
+  ```bash
+  npm install
+  npm run typecheck
+  npm run dev:cli -- lint examples/sample-workspace/api   # run the CLI from source
+  npm run dev:mcp                                          # run the MCP server from source
+  ```
+
 ## Status & roadmap
 
 This is an early draft (0.1.0). The standard and the MCP tool surface come first; expect the resolver and tooling to keep evolving. Feedback, forks, and competing designs are all welcome — I want a better way to feed agents context, not a walled garden.

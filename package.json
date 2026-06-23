@@ -4,6 +4,15 @@
   "description": "A directory-as-context standard plus a read-only MCP server that gives AI agents live, structured, token-budgeted awareness of a multi-project workspace.",
   "type": "module",
   "license": "MIT",
+  "author": "Jesse B Ngolab <jessengolab.dev@gmail.com>",
+  "homepage": "https://github.com/jessn-dev/agenticscope#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jessn-dev/agenticscope.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jessn-dev/agenticscope/issues"
+  },
   "engines": {
     "node": ">=22"
   },
