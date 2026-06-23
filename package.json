@@ -1,0 +1,52 @@
+{
+  "name": "agenticscope",
+  "version": "0.1.0",
+  "description": "A directory-as-context standard plus a read-only MCP server that gives AI agents live, structured, token-budgeted awareness of a multi-project workspace.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "agenticscope": "dist/cli.js",
+    "agenticscope-mcp": "dist/mcp/server.js"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev:cli": "tsx src/cli.ts",
+    "dev:mcp": "tsx src/mcp/server.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "mcp",
+    "model-context-protocol",
+    "context",
+    "claude",
+    "llm",
+    "tokens"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "commander": "^12.1.0",
+    "picomatch": "^4.0.2",
+    "simple-git": "^3.27.0",
+    "smol-toml": "^1.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/picomatch": "^3.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

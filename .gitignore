@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Generated vendor files (built from .scope/ — never hand-edit)
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+.cursorrules
+.gemini/
+
+# Personal, machine-local context
+.scope/memory/user.md
