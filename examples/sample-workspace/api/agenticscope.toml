@@ -1,0 +1,32 @@
+[scope]
+version = "0.1.0"
+name    = "sample-api"
+budget  = 3000
+
+[[fragment]]
+id       = "coding-rules"
+type     = "rule"
+path     = ".scope/rules/coding.md"
+triggers = ["**/*.ts", "**/*.js"]
+priority = 100
+
+[[fragment]]
+id       = "db-schema"
+type     = "knowledge"
+path     = ".scope/knowledge/schema.sql"
+triggers = ["**/*.sql", "db/**", "migration", "schema"]
+priority = 20
+
+[[fragment]]
+id       = "auth-spec"
+type     = "spec"
+path     = ".scope/specs/auth.md"
+triggers = ["auth", "login", "token"]
+priority = 80
+
+[[fragment]]
+id       = "qa-persona"
+type     = "persona"
+path     = ".scope/personas/qa.md"
+triggers = ["test", "qa", "review"]
+priority = 50

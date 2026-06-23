@@ -2,6 +2,8 @@ node_modules/
 dist/
 *.log
 .DS_Store
+.idea/
+.vscode/
 
 # Generated vendor files (built from .scope/ — never hand-edit)
 CLAUDE.md
