@@ -22,12 +22,19 @@ export const FragmentSchema = z.object({
   id: z.string().min(1),
   type: FragmentType,
   path: z.string().min(1),
+  /** Glob patterns matched against concrete file paths (path matching only). */
   triggers: z.array(z.string()).default([]),
+  /** Literal words matched (substring, case-insensitive) against task text. */
+  keywords: z.array(z.string()).default([]),
   priority: z.number().int().default(50),
   /** When true, the fragment is always included regardless of trigger match. */
   always: z.boolean().default(false),
 });
 export type Fragment = z.infer<typeof FragmentSchema>;
+
+/** How matched fragments are ordered before the budget is applied. */
+export const Precedence = z.enum(["type", "priority"]);
+export type Precedence = z.infer<typeof Precedence>;
 
 export const ManifestSchema = z.object({
   scope: z.object({
@@ -36,6 +43,11 @@ export const ManifestSchema = z.object({
     budget: z.number().int().positive().default(4000),
     /** Optional human label for this project. */
     name: z.string().optional(),
+    /**
+     * Ordering strategy: "type" (rule > spec > persona > knowledge, then
+     * priority) or "priority" (priority desc, ties broken by type).
+     */
+    precedence: Precedence.default("type"),
   }),
   fragment: z.array(FragmentSchema).default([]),
 });

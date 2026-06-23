@@ -7,45 +7,56 @@ import type {
   Fragment,
   PackQuery,
   PackResult,
+  Precedence,
   ResolvedFragment,
 } from "./types.js";
 
 /** Minimal manifest shape pack() needs. Matches LoadedManifest from manifest.ts. */
 export interface LoadedManifestLikeShape {
-  manifest: { scope: { budget: number }; fragment: Fragment[] };
+  manifest: { scope: { budget: number; precedence?: Precedence }; fragment: Fragment[] };
   root: string;
 }
 
-/** Strip glob syntax from a trigger to get bare keywords (e.g. "**\/*.sql" -> ["sql"]). */
-function triggerKeywords(trigger: string): string[] {
-  return trigger
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter((w) => w.length >= 2);
+const GLOB_CHARS = /[*?[\]{}()!]/;
+
+/** A trigger with no glob metacharacters is a plain word, usable for text matching too. */
+function isGlob(trigger: string): boolean {
+  return GLOB_CHARS.test(trigger);
 }
 
-/** Determine which of a fragment's triggers match the query. */
+/**
+ * Determine which of a fragment's triggers/keywords match the query.
+ *
+ * - `triggers` are globs, matched ONLY against concrete file paths.
+ * - `keywords` are literal words, matched (substring, case-insensitive) against
+ *   the task text. A non-glob trigger is also treated as a keyword, so plain
+ *   words keep working without forcing every fragment to duplicate them.
+ *
+ * This split removes the old false-positive bug where a glob like "**\/*.ts"
+ * was keyword-split to "ts" and matched unrelated words such as "artifacts".
+ */
 export function matchTriggers(fragment: Fragment, query: PackQuery): string[] {
   if (fragment.always) return ["*always*"];
   const matched = new Set<string>();
   const text = (query.text ?? "").toLowerCase();
   const paths = query.paths ?? [];
 
-  for (const trigger of fragment.triggers) {
-    // 1. Glob match against any concrete file path.
-    if (paths.length > 0) {
+  // 1. Glob triggers -> file paths.
+  if (paths.length > 0) {
+    for (const trigger of fragment.triggers) {
       const isMatch = picomatch(trigger, { dot: true });
-      if (paths.some((p) => isMatch(p))) {
-        matched.add(trigger);
-        continue;
-      }
+      if (paths.some((p) => isMatch(p))) matched.add(trigger);
     }
-    // 2. Keyword match against free-text task description.
-    if (text) {
-      const kws = triggerKeywords(trigger);
-      if (kws.some((kw) => text.includes(kw))) {
-        matched.add(trigger);
-      }
+  }
+
+  // 2. Keywords (explicit + plain-word triggers) -> task text.
+  if (text) {
+    const words = [
+      ...fragment.keywords,
+      ...fragment.triggers.filter((t) => !isGlob(t)),
+    ];
+    for (const w of words) {
+      if (w && text.includes(w.toLowerCase())) matched.add(w);
     }
   }
   return [...matched];
@@ -78,13 +89,17 @@ export function pack(loaded: LoadedManifestLikeShape, query: PackQuery): PackRes
     })
     .filter((c) => c.matchedTriggers.length > 0);
 
+  const mode: Precedence = manifest.scope.precedence ?? "type";
+  const byType = (a: typeof candidates[number], b: typeof candidates[number]) =>
+    TYPE_PRECEDENCE[b.fragment.type] - TYPE_PRECEDENCE[a.fragment.type];
+  const byPriority = (a: typeof candidates[number], b: typeof candidates[number]) =>
+    b.fragment.priority - a.fragment.priority;
+
   const ordered = candidates.sort((a, b) => {
-    const tp = TYPE_PRECEDENCE[b.fragment.type] - TYPE_PRECEDENCE[a.fragment.type];
-    if (tp !== 0) return tp;
-    if (b.fragment.priority !== a.fragment.priority) {
-      return b.fragment.priority - a.fragment.priority;
-    }
-    return 0;
+    const first = mode === "type" ? byType(a, b) : byPriority(a, b);
+    if (first !== 0) return first;
+    const second = mode === "type" ? byPriority(a, b) : byType(a, b);
+    return second;
   });
 
   const included: ResolvedFragment[] = [];

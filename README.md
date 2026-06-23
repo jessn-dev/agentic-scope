@@ -54,26 +54,34 @@ my-app/
     └── memory/            # persistent project knowledge (decisions, prefs)
 ```
 
-The manifest maps **triggers → fragments**, each typed and costed, under a global **budget**:
+Each fragment matches a task two ways, kept deliberately separate:
+
+- **`triggers`** — glob patterns, matched **only** against concrete file paths.
+- **`keywords`** — plain words, matched (substring, case-insensitive) against the **task text**.
+
+Splitting them avoids false positives (a glob like `**/*.ts` never leaks into text matching as "ts" and grabs unrelated words like "artifacts"). A plain-word trigger is also treated as a keyword, so simple words keep working.
 
 ```toml
 [scope]
-version = "0.1.0"
-name    = "my-project"
-budget  = 4000   # hard cap (estimated tokens) per context pack
+version    = "0.1.0"
+name       = "my-project"
+budget     = 4000     # hard cap (estimated tokens) per context pack
+precedence = "type"   # ordering: "type" (rules first) or "priority"
 
 [[fragment]]
 id       = "coding-rules"
 type     = "rule"
 path     = ".scope/rules/coding.md"
-triggers = ["**/*.ts", "**/*.tsx"]
+triggers = ["**/*.ts", "**/*.tsx"]   # file paths
+keywords = ["refactor", "lint"]      # task text
 priority = 100
 
 [[fragment]]
 id       = "db-schema"
 type     = "knowledge"
 path     = ".scope/knowledge/schema.sql"
-triggers = ["**/*.sql", "db/**", "migration"]
+triggers = ["**/*.sql", "db/**"]
+keywords = ["migration", "schema", "database"]
 priority = 20
 ```
 
@@ -212,6 +220,17 @@ agenticscope/
 
 I keep this log for my own reference — what shipped, what I fixed, and what others contributed. Newest first.
 
+### Unreleased
+**Added**
+- Separate `keywords` (text) from `triggers` (file-path globs) on each fragment.
+- `precedence` setting (`"type"` or `"priority"`) to control fragment ordering.
+- Test suite (Vitest) covering manifest parsing, trigger matching, packing/budget, vendor build, and memory grep.
+- GitHub Actions: CI (typecheck + test + build) and tag-triggered npm publish with provenance.
+
+**Fixed**
+- Trigger false positives — globs like `**/*.ts` no longer keyword-match unrelated words such as "artifacts".
+- MCP tool errors now return a clean `isError` result instead of crashing the server.
+
 ### 0.1.0 — Initial release
 **Added**
 - The `.scope/` standard: a `agenticscope.toml` manifest mapping triggers → typed, priced fragments under a token budget.
@@ -231,11 +250,12 @@ I keep this log for my own reference — what shipped, what I fixed, and what ot
 Contributions are welcome.
 
 - **Found a bug or have an idea?** Open an issue: https://github.com/jessn-dev/agenticscope/issues
-- **Sending a pull request?** Fork, branch, run `npm run typecheck` before you push, and describe the change. I record merged PRs in the Changelog above.
+- **Sending a pull request?** Fork, branch, run `npm run typecheck && npm test` before you push, and describe the change. I record merged PRs in the Changelog above.
 - **Local setup:**
   ```bash
   npm install
   npm run typecheck
+  npm test
   npm run dev:cli -- lint examples/sample-workspace/api   # run the CLI from source
   npm run dev:mcp                                          # run the MCP server from source
   ```

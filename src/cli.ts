@@ -58,8 +58,8 @@ program
       if (!existsSync(join(loaded.root, f.path))) {
         problems.push(`${f.id}: path not found → ${f.path}`);
       }
-      if (f.triggers.length === 0 && !f.always) {
-        problems.push(`${f.id}: no triggers and not 'always' → will never be packed`);
+      if (f.triggers.length === 0 && f.keywords.length === 0 && !f.always) {
+        problems.push(`${f.id}: no triggers/keywords and not 'always' → will never be packed`);
       }
     }
     if (problems.length === 0) {
@@ -119,29 +119,35 @@ function write(path: string, content: string) {
 }
 
 const STARTER_MANIFEST = `[scope]
-version = "0.1.0"
-name    = "my-project"
-budget  = 4000   # hard cap (estimated tokens) per context pack
+version    = "0.1.0"
+name       = "my-project"
+budget     = 4000        # hard cap (estimated tokens) per context pack
+precedence = "type"      # "type" (rules first) or "priority"
+
+# triggers = glob patterns matched against file paths
+# keywords = plain words matched against the task text
 
 [[fragment]]
 id       = "coding-rules"
 type     = "rule"
 path     = ".scope/rules/coding.md"
 triggers = ["**/*.ts", "**/*.tsx", "**/*.js"]
+keywords = ["refactor", "lint"]
 priority = 100
 
 [[fragment]]
 id       = "db-schema"
 type     = "knowledge"
 path     = ".scope/knowledge/schema.sql"
-triggers = ["**/*.sql", "db/**", "migration"]
+triggers = ["**/*.sql", "db/**"]
+keywords = ["migration", "schema", "database"]
 priority = 20
 
 [[fragment]]
 id       = "qa-persona"
 type     = "persona"
 path     = ".scope/personas/qa.md"
-triggers = ["test", "qa", "review"]
+keywords = ["test", "qa", "review"]
 priority = 50
 `;
 
