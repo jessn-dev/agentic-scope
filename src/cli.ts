@@ -3,8 +3,9 @@ import { Command } from "commander";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { loadManifest, MANIFEST_FILENAME, isProject } from "./core/manifest.js";
-import { pack, renderPack } from "./core/fragments.js";
-import { build, VENDOR_TARGETS } from "./core/vendor.js";
+import { pack, renderPack, oversizedFragments } from "./core/fragments.js";
+import { build, VENDOR_TARGETS, resolveTargets } from "./core/vendor.js";
+import { writeSchema, SCHEMA_PATH } from "./core/schema.js";
 
 // Single source of truth for the version: package.json (kept in sync by semantic-release).
 const pkg = JSON.parse(
@@ -67,6 +68,10 @@ program
         problems.push(`${f.id}: no triggers/keywords and not 'always' → will never be packed`);
       }
     }
+    // Warn (don't fail) about fragments that alone exceed the budget.
+    for (const o of oversizedFragments(loaded)) {
+      console.warn(`⚠ ${o.id}: ${o.tokens} tok exceeds budget ${o.budget} → can never be packed`);
+    }
     if (problems.length === 0) {
       console.log(`✓ Valid. ${loaded.manifest.fragment.length} fragment(s), budget ${loaded.manifest.scope.budget} tok.`);
     } else {
@@ -81,9 +86,20 @@ program
   .command("build")
   .description("Compile .scope/ into vendor files (CLAUDE.md, GEMINI.md, AGENTS.md, .cursorrules).")
   .argument("[dir]", "Project directory", ".")
-  .action((dir: string) => {
+  .option(
+    "-t, --target <name...>",
+    `Only build these vendors (${VENDOR_TARGETS.map((t) => t.name).join(", ")})`,
+  )
+  .action((dir: string, opts: { target?: string[] }) => {
     const loaded = loadManifest(resolve(dir));
-    const { written } = build(loaded);
+    let targets;
+    try {
+      targets = resolveTargets(opts.target);
+    } catch (err) {
+      console.error(`✗ ${err instanceof Error ? err.message : err}`);
+      process.exit(1);
+    }
+    const { written } = build(loaded, targets);
     console.log(`✓ Built ${written.length} vendor file(s):`);
     for (const f of written) {
       const label = VENDOR_TARGETS.find((t) => t.file === f)?.label ?? "";
@@ -98,21 +114,73 @@ program
   .argument("<task...>", "Task description")
   .option("-d, --dir <dir>", "Project directory", ".")
   .option("-p, --path <path...>", "Concrete file paths the task touches")
+  .option("-b, --budget <n>", "Override the manifest token budget", (v) => parseInt(v, 10))
+  .option("--exact", "Use the exact tokenizer (gpt-tokenizer) instead of the chars/4 estimate")
   .option("--raw", "Print only the packed context (no report)")
-  .action((taskWords: string[], opts: { dir: string; path?: string[]; raw?: boolean }) => {
-    const loaded = loadManifest(resolve(opts.dir));
-    const text = taskWords.join(" ");
-    const result = pack(loaded, { text, paths: opts.path });
-    if (opts.raw) {
-      console.log(renderPack(result));
-      return;
-    }
-    console.log(`► "${text}" — matched ${result.included.length} fragment(s) (budget ${result.budget}, used ${result.used})`);
-    for (const r of result.included) {
-      console.log(`  [${r.fragment.type}] ${r.fragment.id.padEnd(20)} ${String(r.tokens).padStart(5)} tok`);
-    }
-    for (const s of result.skipped) console.log(`  — skipped ${s.id} (${s.reason})`);
-    console.log("\n" + renderPack(result));
+  .action(
+    (
+      taskWords: string[],
+      opts: { dir: string; path?: string[]; budget?: number; exact?: boolean; raw?: boolean },
+    ) => {
+      const loaded = loadManifest(resolve(opts.dir));
+      const text = taskWords.join(" ");
+      const result = pack(loaded, { text, paths: opts.path }, { budget: opts.budget, exact: opts.exact });
+      if (opts.raw) {
+        console.log(renderPack(result));
+        return;
+      }
+      const tk = opts.exact ? "exact" : "est";
+      console.log(
+        `► "${text}" — matched ${result.included.length} fragment(s) (budget ${result.budget}, used ${result.used} ${tk})`,
+      );
+      for (const r of result.included) {
+        console.log(`  [${r.fragment.type}] ${r.fragment.id.padEnd(20)} ${String(r.tokens).padStart(5)} tok`);
+      }
+      for (const s of result.skipped) console.log(`  — skipped ${s.id} (${s.reason})`);
+      console.log("\n" + renderPack(result));
+    },
+  );
+
+// ---- schema ----------------------------------------------------------------
+program
+  .command("schema")
+  .description("Generate the JSON Schema for agenticscope.toml (editor autocomplete/validation).")
+  .argument("[dir]", "Project directory", ".")
+  .option("-o, --out <file>", "Output path", SCHEMA_PATH)
+  .action((dir: string, opts: { out: string }) => {
+    const out = resolve(dir, opts.out);
+    writeSchema(out);
+    console.log(`✓ Wrote manifest JSON Schema → ${opts.out}`);
+    console.log("  Point your TOML editor at it (e.g. Even Better TOML) for autocomplete.");
+  });
+
+// ---- mcp-config ------------------------------------------------------------
+program
+  .command("mcp-config")
+  .description("Print ready-to-paste MCP server config for a host (Claude Desktop, Cursor, generic).")
+  .option("-w, --workspace <dir>", "Workspace root the server should scan", ".")
+  .option("--host <host>", "claude | cursor | generic", "claude")
+  .action((opts: { workspace: string; host: string }) => {
+    const workspace = resolve(opts.workspace);
+    const serverEntry = {
+      command: "agenticscope-mcp",
+      args: ["--workspace", workspace],
+    };
+    const host = opts.host.toLowerCase();
+    // Claude Desktop and Cursor both nest under "mcpServers"; generic is the same
+    // shape, shown bare so it can be adapted to any host.
+    const config =
+      host === "generic"
+        ? { agenticscope: serverEntry }
+        : { mcpServers: { agenticscope: serverEntry } };
+    const where =
+      host === "claude"
+        ? "→ claude_desktop_config.json"
+        : host === "cursor"
+          ? "→ .cursor/mcp.json (or Cursor Settings → MCP)"
+          : "";
+    if (where) console.log(`# ${where}`);
+    console.log(JSON.stringify(config, null, 2));
   });
 
 // ---- starter templates -----------------------------------------------------
