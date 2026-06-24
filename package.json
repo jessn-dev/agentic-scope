@@ -1,6 +1,6 @@
 {
   "name": "agenticscope",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A directory-as-context standard plus a read-only MCP server that gives AI agents live, structured, token-budgeted awareness of a multi-project workspace.",
   "type": "module",
   "license": "MIT",

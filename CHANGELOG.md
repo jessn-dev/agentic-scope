@@ -1,3 +1,17 @@
+## [0.2.1](https://github.com/jessn-dev/agentic-scope/compare/v0.2.0...v0.2.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* correct repository.url and auto-publish from main via OIDC trusted publishing ([537ec9e](https://github.com/jessn-dev/agentic-scope/commit/537ec9ecc98d68105515e411428ac81ea8998ebd))
+* correct repository.url and auto-publish from main via OIDC trusted publishing ([dcf50b8](https://github.com/jessn-dev/agentic-scope/commit/dcf50b84e9721cb76a3aee1a3e3727ba690c77d6))
+* correct repository.url and auto-publish from main via semantic-release ([4060980](https://github.com/jessn-dev/agentic-scope/commit/4060980094c329bbd599472a9c556e05e70c365a))
+* drop setup-node registry-url so npm uses OIDC trusted publishing ([7bbdda5](https://github.com/jessn-dev/agentic-scope/commit/7bbdda5142cafdd8a2706da408079e3c529586a3))
+* publish via top-level OIDC step instead of semantic-release exec ([9b3e34f](https://github.com/jessn-dev/agentic-scope/commit/9b3e34f65968029afe5fcc8bcfe19d0409f48d2b))
+* run release without environment so OIDC subject matches trusted publisher ([d4434f7](https://github.com/jessn-dev/agentic-scope/commit/d4434f72177a75ac039d02213291831ebeae901b))
+* strip setup-node token placeholder from npmrc so npm uses OIDC ([90e8f07](https://github.com/jessn-dev/agentic-scope/commit/90e8f07c13f0dcb591822573579edf76e86aa2d4))
+* use node 24 so npm 11 enables OIDC trusted publishing ([0098366](https://github.com/jessn-dev/agentic-scope/commit/009836688723fa0b32cce5a6b09ebbc9af294c31))
+
 # Changelog
 
 All notable changes to this project are documented in this file. Newest first —
