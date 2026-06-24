@@ -62,6 +62,24 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      # semantic-release bumps package.json + CHANGELOG, tags, and creates the
+      # GitHub release, but does NOT publish to npm (npmPublish: false). Its npm
+      # plugin runs npm in a child env with its own npmrc that shadows the OIDC
+      # config, so trusted publishing only works as a top-level step.
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Publish at the top level, where the stripped npmrc + OIDC id-token work.
+      # Re-strip in case semantic-release rewrote the npmrc. Publishes only when
+      # the version in package.json (just bumped by semantic-release on a release)
+      # isn't already on npm — so non-release pushes are a no-op.
+      - name: Publish to npm via OIDC trusted publishing
+        run: |
+          sed -i '/_authToken/d; /always-auth/d' "$NPM_CONFIG_USERCONFIG" 2>/dev/null || true
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "agenticscope@$VERSION" version >/dev/null 2>&1; then
+            echo "agenticscope@$VERSION already on npm — nothing to publish"
+          else
+            echo "publishing agenticscope@$VERSION"
+            npm publish --provenance --access public
+          fi
