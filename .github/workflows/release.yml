@@ -6,10 +6,14 @@ name: Release
 #   feat:           -> minor   (e.g. 0.2.0 -> 0.3.0)
 #   feat!: / BREAKING CHANGE in body -> major (e.g. 0.2.0 -> 1.0.0)
 # It then updates package.json + CHANGELOG.md, tags, creates a GitHub release,
-# and publishes with npm provenance. No version bump = no release.
+# and publishes via npm OIDC Trusted Publishing (no token). No bump = no release.
 #
-# Requires repo secret NPM_TOKEN (granular automation token, "bypass 2FA").
-# GITHUB_TOKEN is provided automatically by Actions.
+# npm auth comes from GitHub OIDC (id-token: write). Configure the matching
+# Trusted Publisher on npmjs.com for package "agenticscope":
+#   Repository owner: jessn-dev
+#   Repository:       agentic-scope
+#   Workflow filename: release.yml   <-- this file's basename, exactly
+#   Environment:       production    <-- must match `environment:` below (or blank)
 
 on:
   push:
@@ -23,12 +27,12 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    environment: production # NPM_TOKEN is stored as a Production environment secret
+    environment: production
     permissions:
       contents: write # create tags, commits, and GitHub releases
       issues: write # semantic-release comments on released issues/PRs
       pull-requests: write
-      id-token: write # required for npm provenance
+      id-token: write # required for npm OIDC trusted publishing + provenance
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,8 +49,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      # No NPM_TOKEN: npm authenticates to the registry via GitHub OIDC
-      # (id-token: write) using the Trusted Publisher configured on npmjs.com.
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
