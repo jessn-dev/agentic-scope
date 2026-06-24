@@ -23,6 +23,7 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: production # NPM_TOKEN is stored as a Production environment secret
     permissions:
       contents: write # create tags, commits, and GitHub releases
       issues: write # semantic-release comments on released issues/PRs
