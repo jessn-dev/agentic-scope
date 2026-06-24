@@ -110,8 +110,6 @@ program
     console.log("\n" + renderPack(result));
   });
 
-program.parseAsync();
-
 // ---- starter templates -----------------------------------------------------
 function write(path: string, content: string) {
   if (existsSync(path)) return;
@@ -179,3 +177,5 @@ Status: Accepted
 
 Record *why* a choice was made so future agents stay consistent.
 `;
+
+program.parseAsync();
