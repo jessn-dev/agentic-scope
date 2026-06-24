@@ -49,6 +49,15 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: node --version && npm --version # must be node >= 22.14 and npm >= 11.5.1
+      # setup-node's registry-url writes `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}`
+      # plus `always-auth=true`. With no token, NODE_AUTH_TOKEN is a literal
+      # placeholder, so npm sends a bogus credential and skips OIDC (404). Strip
+      # both lines so npm 11 has the registry but no token, and uses the GitHub
+      # OIDC id-token for trusted publishing.
+      - name: Enable OIDC trusted publishing (strip token auth from npmrc)
+        run: |
+          sed -i '/_authToken/d; /always-auth/d' "$NPM_CONFIG_USERCONFIG"
+          echo "npmrc now:"; cat "$NPM_CONFIG_USERCONFIG"
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
