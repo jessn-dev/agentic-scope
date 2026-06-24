@@ -1,21 +1,38 @@
-name: Publish
+name: Release
 
-# Publishes to npm when you push a version tag, e.g. `git tag v0.1.1 && git push --tags`.
-# Uses npm provenance (the verified badge). Requires an NPM_TOKEN secret with
-# "bypass 2FA" enabled (granular access token).
+# Auto-publishes to npm on every push to main. semantic-release reads the
+# Conventional Commits since the last release and decides the version bump:
+#   fix:            -> patch   (e.g. 0.2.0 -> 0.2.1)
+#   feat:           -> minor   (e.g. 0.2.0 -> 0.3.0)
+#   feat!: / BREAKING CHANGE in body -> major (e.g. 0.2.0 -> 1.0.0)
+# It then updates package.json + CHANGELOG.md, tags, creates a GitHub release,
+# and publishes with npm provenance. No version bump = no release.
+#
+# Requires repo secret NPM_TOKEN (granular automation token, "bypass 2FA").
+# GITHUB_TOKEN is provided automatically by Actions.
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
+
+# Prevent overlapping releases if pushes land close together.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # create tags, commits, and GitHub releases
+      issues: write # semantic-release comments on released issues/PRs
+      pull-requests: write
       id-token: write # required for npm provenance
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # semantic-release needs full history + tags
+          persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -24,6 +41,9 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
-      - run: npm publish --provenance --access public
+      - run: npm run build
+      - run: npx semantic-release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"

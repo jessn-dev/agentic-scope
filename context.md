@@ -9,7 +9,7 @@ Solves: monolithic context files burning tokens, mixed rule/knowledge priority,
 vendor-folder sprawl, and zero workspace-level awareness.
 
 - **Stack:** TypeScript (ESM, NodeNext), Node >= 22.
-- **Repo:** https://github.com/jessn-dev/agenticscope
+- **Repo:** https://github.com/jessn-dev/agentic-scope
 - **npm:** `agenticscope` (name reserved; `0.1.0` published, `0.2.0` pending publish).
 - **Two bins:** `agenticscope` (CLI), `agenticscope-mcp` (MCP server).
 

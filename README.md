@@ -218,38 +218,13 @@ agenticscope/
 
 ## Changelog
 
-I keep this log for my own reference — what shipped, what I fixed, and what others contributed. Newest first.
-
-### Unreleased
-**Added**
-- Separate `keywords` (text) from `triggers` (file-path globs) on each fragment.
-- `precedence` setting (`"type"` or `"priority"`) to control fragment ordering.
-- Test suite (Vitest) covering manifest parsing, trigger matching, packing/budget, vendor build, and memory grep.
-- GitHub Actions: CI (typecheck + test + build) and tag-triggered npm publish with provenance.
-
-**Fixed**
-- Trigger false positives — globs like `**/*.ts` no longer keyword-match unrelated words such as "artifacts".
-- MCP tool errors now return a clean `isError` result instead of crashing the server.
-
-### 0.1.0 — Initial release
-**Added**
-- The `.scope/` standard: a `agenticscope.toml` manifest mapping triggers → typed, priced fragments under a token budget.
-- CLI: `init`, `lint`, `build`, `pack`.
-- Vendor build: compile one `.scope/` source into `CLAUDE.md`, `GEMINI.md`, `AGENTS.md`, and `.cursorrules`.
-- Read-only MCP server with `list_projects`, `list_subagents`, `list_plans`, `git_status`, `grep_memory`, and `pack_context`.
-- A sample workspace under `examples/` to try the commands against.
-
-**Fixed**
-- Required Node ≥ 22 (Node 18 and 20 are end-of-life).
-- Stopped tracking the `.idea/` IDE directory.
-
-> When I fix an issue or merge a contribution, I add it here under a new version with **Added / Changed / Fixed** and link the issue or PR, e.g. `- Fixed empty-trigger crash in pack (#12, thanks @contributor)`.
+See [CHANGELOG.md](CHANGELOG.md) for what shipped, what I fixed, and what others contributed.
 
 ## Contributing
 
 Contributions are welcome.
 
-- **Found a bug or have an idea?** Open an issue: https://github.com/jessn-dev/agenticscope/issues
+- **Found a bug or have an idea?** Open an issue: https://github.com/jessn-dev/agentic-scope/issues
 - **Sending a pull request?** Fork, branch, run `npm run typecheck && npm test` before you push, and describe the change. I record merged PRs in the Changelog above.
 - **Local setup:**
   ```bash

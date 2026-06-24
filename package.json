@@ -5,13 +5,13 @@
   "type": "module",
   "license": "MIT",
   "author": "Jesse B Ngolab <jessengolab.dev@gmail.com>",
-  "homepage": "https://github.com/jessn-dev/agenticscope#readme",
+  "homepage": "https://github.com/jessn-dev/agentic-scope#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jessn-dev/agenticscope.git"
+    "url": "git+https://github.com/jessn-dev/agentic-scope.git"
   },
   "bugs": {
-    "url": "https://github.com/jessn-dev/agenticscope/issues"
+    "url": "https://github.com/jessn-dev/agentic-scope/issues"
   },
   "engines": {
     "node": ">=22"
@@ -34,7 +34,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "release": "semantic-release"
   },
   "keywords": [
     "ai",
@@ -55,8 +56,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.10.0",
     "@types/picomatch": "^3.0.1",
+    "semantic-release": "^24.2.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

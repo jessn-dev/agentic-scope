@@ -1,8 +1,8 @@
 name: CI
 
+# Runs on PRs only. Pushes to main are validated by the release workflow
+# (.github/workflows/publish.yml), which runs the same checks before publishing.
 on:
-  push:
-    branches: [main]
   pull_request:
 
 jobs:

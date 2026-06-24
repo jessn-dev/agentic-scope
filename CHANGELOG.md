@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this project are documented in this file. Newest first —
+what shipped, what I fixed, and what others contributed.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Releases below 0.2.1 were maintained by hand. From 0.2.1 onward, entries are
+generated automatically by [semantic-release](https://semantic-release.gitbook.io/)
+from [Conventional Commits](https://www.conventionalcommits.org/) on push to `main`.
+
+## [0.2.0]
+
+### Added
+- Separate `keywords` (text) from `triggers` (file-path globs) on each fragment.
+- `precedence` setting (`"type"` or `"priority"`) to control fragment ordering.
+- Test suite (Vitest) covering manifest parsing, trigger matching, packing/budget, vendor build, and memory grep.
+- GitHub Actions: CI (typecheck + test + build) and tag-triggered npm publish with provenance.
+
+### Fixed
+- Trigger false positives — globs like `**/*.ts` no longer keyword-match unrelated words such as "artifacts".
+- MCP tool errors now return a clean `isError` result instead of crashing the server.
+
+## [0.1.0] — Initial release
+
+### Added
+- The `.scope/` standard: an `agenticscope.toml` manifest mapping triggers → typed, priced fragments under a token budget.
+- CLI: `init`, `lint`, `build`, `pack`.
+- Vendor build: compile one `.scope/` source into `CLAUDE.md`, `GEMINI.md`, `AGENTS.md`, and `.cursorrules`.
+- Read-only MCP server with `list_projects`, `list_subagents`, `list_plans`, `git_status`, `grep_memory`, and `pack_context`.
+- A sample workspace under `examples/` to try the commands against.
+
+### Fixed
+- Required Node ≥ 22 (Node 18 and 20 are end-of-life).
+- Stopped tracking the `.idea/` IDE directory.

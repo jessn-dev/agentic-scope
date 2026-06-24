@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { loadManifest, MANIFEST_FILENAME, isProject } from "./core/manifest.js";
 import { pack, renderPack } from "./core/fragments.js";
 import { build, VENDOR_TARGETS } from "./core/vendor.js";
 
+// Single source of truth for the version: package.json (kept in sync by semantic-release).
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as { version: string };
+
 const program = new Command();
 program
   .name("agenticscope")
   .description("Directory-as-context standard + token-budgeted context packer for AI agents.")
-  .version("0.1.0");
+  .version(pkg.version);
 
 // ---- init ------------------------------------------------------------------
 program
