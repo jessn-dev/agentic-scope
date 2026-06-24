@@ -1,0 +1,95 @@
+{
+  "$ref": "#/definitions/AgenticscopeManifest",
+  "definitions": {
+    "AgenticscopeManifest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "default": "0.1.0"
+            },
+            "budget": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 4000
+            },
+            "name": {
+              "type": "string"
+            },
+            "precedence": {
+              "type": "string",
+              "enum": [
+                "type",
+                "priority"
+              ],
+              "default": "type"
+            }
+          },
+          "additionalProperties": false
+        },
+        "fragment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "rule",
+                  "knowledge",
+                  "spec",
+                  "persona"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "triggers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "keywords": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "priority": {
+                "type": "integer",
+                "default": 50
+              },
+              "always": {
+                "type": "boolean",
+                "default": false
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "path"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "scope"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

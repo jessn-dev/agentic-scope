@@ -2,7 +2,12 @@
 
 **A directory-as-context standard plus a read-only MCP server that gives any AI agent live, structured awareness of your workspace — without burning your tokens re-reading everything.**
 
-> **Status:** Draft 0.1.0 · **License:** MIT · **Requires:** Node.js ≥ 22
+[![npm version](https://img.shields.io/npm/v/agenticscope.svg)](https://www.npmjs.com/package/agenticscope)
+[![CI](https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml/badge.svg)](https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/agenticscope.svg)](./LICENSE)
+[![node](https://img.shields.io/node/v/agenticscope.svg)](https://nodejs.org)
+
+> **License:** MIT · **Requires:** Node.js ≥ 22 · Published to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
 
 ---
 
@@ -155,9 +160,13 @@ agenticscope pack "refactor handler" -p src/api/handler.ts -p src/db/schema.sql
 | Command | Does |
 | :--- | :--- |
 | `agenticscope init [dir]` | Scaffold a manifest + `.scope/` tree |
-| `agenticscope lint [dir]` | Validate the manifest; flag missing paths, dupe ids, dead fragments |
-| `agenticscope build [dir]` | Compile `.scope/` into all vendor files |
-| `agenticscope pack <task...>` | Resolve a task into a budgeted context block (`-d` dir, `-p` paths, `--raw`) |
+| `agenticscope lint [dir]` | Validate the manifest; flag missing paths, dupe ids, dead fragments, and fragments too big for the budget |
+| `agenticscope build [dir]` | Compile `.scope/` into vendor files (`-t, --target claude\|gemini\|agents\|cursor` to pick a subset) |
+| `agenticscope pack <task...>` | Resolve a task into a budgeted context block (`-d` dir, `-p` paths, `-b, --budget` override, `--exact` tokenizer, `--raw`) |
+| `agenticscope schema [dir]` | Generate `schema/manifest.schema.json` for TOML editor autocomplete (`-o` out path) |
+| `agenticscope mcp-config` | Print ready-to-paste MCP config (`--workspace`, `--host claude\|cursor\|generic`) |
+
+**Exact token counts.** `pack` estimates tokens with a fast `chars/4` heuristic by default. Pass `--exact` to use the bundled `gpt-tokenizer` (cl100k) for precise counts when a budget is tight.
 
 ### Wire up the MCP server
 
@@ -176,7 +185,15 @@ Point any MCP-capable host at the server and give it your workspace root. The ho
 }
 ```
 
-The same server works in **Gemini (Gemini CLI)**, **ChatGPT / OpenAI agents**, **Cursor**, **Zed**, and **Windsurf** — each just has its own config file. You can also set the workspace with the `AGENTICSCOPE_WORKSPACE` environment variable instead of `--workspace`.
+The same server works in **Gemini (Gemini CLI)**, **ChatGPT / OpenAI agents**, **Cursor**, **Zed**, and **Windsurf** — each just has its own config file. You can also set the workspace with the `AGENTICSCOPE_WORKSPACE` environment variable instead of `--workspace`, or run `agenticscope mcp-config --host cursor` to print a ready-to-paste block.
+
+**Stdio by default; HTTP for remote/hosted use.** Desktop hosts launch the server over stdio. To run it as a shared service, start it over Streamable HTTP:
+
+```bash
+agenticscope-mcp --http 3000 --workspace ~/Documents   # serves POST/GET http://localhost:3000/mcp
+```
+
+**Safe by construction.** Every tool is read-only, errors return a clean `isError` result instead of crashing the host, and `project` arguments are **scope-guarded** to the workspace root — a client can't coax the server into reading `/etc` or `../../secrets`.
 
 Once connected, I ask things like *"what's in flight across my workspace?"* and the host calls `list_plans` + `git_status` and answers from structured data — **no file dumps, no token burn.** That's the whole point delivered.
 
@@ -216,16 +233,12 @@ agenticscope/
     └── sample-workspace/ # a working .scope/ project to try the commands against
 ```
 
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for what shipped, what I fixed, and what others contributed.
-
 ## Contributing
 
 Contributions are welcome.
 
 - **Found a bug or have an idea?** Open an issue: https://github.com/jessn-dev/agentic-scope/issues
-- **Sending a pull request?** Fork, branch, run `npm run typecheck && npm test` before you push, and describe the change. I record merged PRs in the Changelog above.
+- **Sending a pull request?** Fork, branch, run `npm run typecheck && npm test` before you push, and describe the change. Releases and merged changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 - **Local setup:**
   ```bash
   npm install
@@ -237,7 +250,7 @@ Contributions are welcome.
 
 ## Status & roadmap
 
-This is an early draft (0.1.0). The standard and the MCP tool surface come first; expect the resolver and tooling to keep evolving. Feedback, forks, and competing designs are all welcome — I want a better way to feed agents context, not a walled garden.
+The `1.0` line marks a stable CLI + MCP tool surface and manifest schema. The standard and tooling will keep evolving; breaking changes are released as new majors. Feedback, forks, and competing designs are all welcome — I want a better way to feed agents context, not a walled garden.
 
 ---
 

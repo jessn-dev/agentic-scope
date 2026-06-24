@@ -71,6 +71,14 @@ function loadContent(root: string, fragment: Fragment): string {
   return readFileSync(full, "utf8");
 }
 
+/** Options controlling a pack: budget override and tokenizer selection. */
+export interface PackOptions {
+  /** Override the manifest's token budget for this pack. */
+  budget?: number;
+  /** Use the exact tokenizer (gpt-tokenizer) instead of the chars/4 estimate. */
+  exact?: boolean;
+}
+
 /**
  * Resolve a query into a budgeted set of fragments.
  *
@@ -78,9 +86,13 @@ function loadContent(root: string, fragment: Fragment): string {
  * (desc), then smaller token cost first. Fragments are added until the token
  * budget is exhausted; the rest are reported as skipped.
  */
-export function pack(loaded: LoadedManifestLikeShape, query: PackQuery): PackResult {
+export function pack(
+  loaded: LoadedManifestLikeShape,
+  query: PackQuery,
+  opts: PackOptions = {},
+): PackResult {
   const { manifest, root } = loaded;
-  const budget = manifest.scope.budget;
+  const budget = opts.budget ?? manifest.scope.budget;
 
   const candidates = manifest.fragment
     .map((fragment) => {
@@ -115,7 +127,7 @@ export function pack(loaded: LoadedManifestLikeShape, query: PackQuery): PackRes
 
   for (const { fragment, matchedTriggers } of ordered) {
     const content = loadContent(root, fragment);
-    const tokens = estimateTokens(content);
+    const tokens = estimateTokens(content, { exact: opts.exact });
     if (used + tokens > budget) {
       skipped.push({
         id: fragment.id,
@@ -128,6 +140,26 @@ export function pack(loaded: LoadedManifestLikeShape, query: PackQuery): PackRes
   }
 
   return { query, budget, used, included, skipped };
+}
+
+/**
+ * Find fragments whose own content exceeds the budget — they can never be
+ * packed, no matter the query. Missing files are skipped (lint reports those
+ * separately). Used by `lint` to warn about dead weight.
+ */
+export function oversizedFragments(
+  loaded: LoadedManifestLikeShape,
+  opts: PackOptions = {},
+): { id: string; tokens: number; budget: number }[] {
+  const { manifest, root } = loaded;
+  const budget = opts.budget ?? manifest.scope.budget;
+  const over: { id: string; tokens: number; budget: number }[] = [];
+  for (const fragment of manifest.fragment) {
+    if (!existsSync(join(root, fragment.path))) continue;
+    const tokens = estimateTokens(loadContent(root, fragment), { exact: opts.exact });
+    if (tokens > budget) over.push({ id: fragment.id, tokens, budget });
+  }
+  return over;
 }
 
 /** Render a PackResult to a plain-text context block for pasting into any model. */

@@ -1,3 +1,34 @@
+## [Unreleased] — 1.0.0 (stable API)
+
+First stable line: the CLI surface, MCP tool surface, and manifest schema are
+now considered stable and versioned under SemVer. Released as a **major** because
+the vendor-file output format changed (see Changed).
+
+### Added
+- `pack --budget <n>` to override the manifest token budget per run, and
+  `pack --exact` to count tokens with the bundled `gpt-tokenizer` (cl100k)
+  instead of the `chars/4` estimate.
+- `lint` now warns about fragments whose content alone exceeds the budget
+  (they can never be packed).
+- `build --target <name...>` to compile only selected vendors
+  (`claude`, `gemini`, `agents`, `cursor`).
+- `agenticscope schema` — generate `schema/manifest.schema.json` from the zod
+  schema for TOML editor autocomplete/validation.
+- `agenticscope mcp-config` — print ready-to-paste MCP server config per host
+  (Claude Desktop, Cursor, generic).
+- MCP server **HTTP transport**: `agenticscope-mcp --http [port]` serves over
+  Streamable HTTP for remote/hosted use, alongside the default stdio transport.
+
+### Changed
+- **BREAKING:** vendor files are now rendered per vendor. `CLAUDE.md`/`GEMINI.md`/
+  `AGENTS.md` get vendor-specific markdown preambles and `.cursorrules` is a plain
+  instruction file (no markdown H1). The old single `# Agent context for <name>`
+  header is gone. Re-run `agenticscope build` to regenerate.
+
+### Security
+- MCP `project` arguments are scope-guarded to the workspace root; paths that
+  escape it (`../…`, absolute paths outside) are rejected.
+
 ## [0.2.1](https://github.com/jessn-dev/agentic-scope/compare/v0.2.0...v0.2.1) (2026-06-24)
 
 
