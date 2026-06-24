@@ -62,6 +62,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # TEMP DIAGNOSTIC: direct top-level OIDC publish (no semantic-release), so
+      # nothing tags/orphans if it fails. Publishes the current package.json
+      # version (0.2.0). Verbose surfaces the OIDC trusted-publishing exchange.
+      - run: npm publish --provenance --access public --loglevel verbose
