@@ -13,7 +13,7 @@ name: Release
 #   Repository owner: jessn-dev
 #   Repository:       agentic-scope
 #   Workflow filename: release.yml   <-- this file's basename, exactly
-#   Environment:       production    <-- must match `environment:` below (or blank)
+#   Environment:       (leave blank) <-- this job runs outside any environment
 
 on:
   push:
@@ -27,7 +27,6 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    environment: production
     permissions:
       contents: write # create tags, commits, and GitHub releases
       issues: write # semantic-release comments on released issues/PRs
