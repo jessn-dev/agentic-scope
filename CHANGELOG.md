@@ -1,3 +1,13 @@
+## [0.2.1](https://github.com/jessn-dev/agentic-scope/compare/v0.2.0...v0.2.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* correct repository.url and auto-publish from main via OIDC trusted publishing ([537ec9e](https://github.com/jessn-dev/agentic-scope/commit/537ec9ecc98d68105515e411428ac81ea8998ebd))
+* correct repository.url and auto-publish from main via OIDC trusted publishing ([dcf50b8](https://github.com/jessn-dev/agentic-scope/commit/dcf50b84e9721cb76a3aee1a3e3727ba690c77d6))
+* correct repository.url and auto-publish from main via semantic-release ([4060980](https://github.com/jessn-dev/agentic-scope/commit/4060980094c329bbd599472a9c556e05e70c365a))
+* run release without environment so OIDC subject matches trusted publisher ([d4434f7](https://github.com/jessn-dev/agentic-scope/commit/d4434f72177a75ac039d02213291831ebeae901b))
+
 # Changelog
 
 All notable changes to this project are documented in this file. Newest first —
