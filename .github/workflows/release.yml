@@ -37,10 +37,14 @@ jobs:
         with:
           fetch-depth: 0 # semantic-release needs full history + tags
           persist-credentials: true
+      # NOTE: no `registry-url` here. setup-node's registry-url writes an
+      # ~/.npmrc with `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` and
+      # `always-auth=true`. With no token that empty auth header is sent on the
+      # publish and npm never falls back to OIDC, so trusted publishing fails
+      # with a misleading 404. Leaving it out lets npm do the OIDC exchange.
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: npm
       # Trusted publishing (OIDC) needs npm >= 11.5.1; runners ship npm 10.
       - run: npm install -g npm@latest
