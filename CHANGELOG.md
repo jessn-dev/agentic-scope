@@ -1,3 +1,14 @@
+# [1.0.0](https://github.com/jessn-dev/agentic-scope/compare/v0.2.1...v1.0.0) (2026-06-24)
+
+
+* featstabilize CLI + MCP surface for 1.0 ([dcfe185](https://github.com/jessn-dev/agentic-scope/commit/dcfe185fe8fb4974ec01a5f2d908e4e568c6b9b5))
+
+
+### BREAKING CHANGES
+
+* vendor files are rendered per vendor; the old single
+  '# Agent context for <name>' header is gone. Re-run `agenticscope build`.
+
 ## [Unreleased] — 1.0.0 (stable API)
 
 First stable line: the CLI surface, MCP tool surface, and manifest schema are
