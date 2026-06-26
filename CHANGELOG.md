@@ -1,8 +1,8 @@
-## [Unreleased] — 1.0.0 (stable API)
+# [1.0.0](https://github.com/jessn-dev/agentic-scope/compare/v0.2.1...v1.0.0) (2026-06-24)
 
-First stable line: the CLI surface, MCP tool surface, and manifest schema are
-now considered stable and versioned under SemVer. Released as a **major** because
-the vendor-file output format changed (see Changed).
+First stable release: the CLI surface, MCP tool surface, and manifest schema are
+now stable and versioned under SemVer. Cut as a **major** because the vendor-file
+output format changed (see Changed).
 
 ### Added
 - `pack --budget <n>` to override the manifest token budget per run, and

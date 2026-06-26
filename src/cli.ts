@@ -2,10 +2,25 @@
 import { Command } from "commander";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { ZodError } from "zod";
 import { loadManifest, MANIFEST_FILENAME, isProject } from "./core/manifest.js";
 import { pack, renderPack, oversizedFragments } from "./core/fragments.js";
 import { build, checkBuild, VENDOR_TARGETS, resolveTargets } from "./core/vendor.js";
 import { writeSchema, SCHEMA_PATH } from "./core/schema.js";
+
+function loadManifestOrExit(dir: string) {
+  try {
+    return loadManifest(resolve(dir));
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const msg = err.issues.map((i) => `${i.message}  (path: ${i.path.join(".")})`).join("\n  ");
+      console.error(`✗ ${msg}`);
+    } else {
+      console.error(`✗ ${err instanceof Error ? err.message : err}`);
+    }
+    process.exit(1);
+  }
+}
 
 // Single source of truth for the version: package.json (kept in sync by semantic-release).
 const pkg = JSON.parse(
@@ -49,13 +64,7 @@ program
   .argument("[dir]", "Project directory", ".")
   .action((dir: string) => {
     const root = resolve(dir);
-    let loaded;
-    try {
-      loaded = loadManifest(root);
-    } catch (err) {
-      console.error(`✗ ${err instanceof Error ? err.message : err}`);
-      process.exit(1);
-    }
+    const loaded = loadManifestOrExit(dir);
     const problems: string[] = [];
     const ids = new Set<string>();
     for (const f of loaded.manifest.fragment) {
@@ -92,7 +101,7 @@ program
   )
   .option("--check", "Verify vendor files are up to date with .scope/ (no writes); exit 1 if stale/missing")
   .action((dir: string, opts: { target?: string[]; check?: boolean }) => {
-    const loaded = loadManifest(resolve(dir));
+    const loaded = loadManifestOrExit(dir);
     let targets;
     try {
       targets = resolveTargets(opts.target);
@@ -136,7 +145,7 @@ program
       taskWords: string[],
       opts: { dir: string; path?: string[]; budget?: number; exact?: boolean; raw?: boolean },
     ) => {
-      const loaded = loadManifest(resolve(opts.dir));
+      const loaded = loadManifestOrExit(opts.dir);
       const text = taskWords.join(" ");
       const result = pack(loaded, { text, paths: opts.path }, { budget: opts.budget, exact: opts.exact });
       if (opts.raw) {

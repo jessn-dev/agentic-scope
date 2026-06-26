@@ -49,11 +49,12 @@ export const VENDOR_TARGETS: VendorTarget[] = [
   },
 ];
 
-const ORDER: Fragment["type"][] = ["rule", "persona", "spec", "knowledge"];
+const ORDER: Fragment["type"][] = ["rule", "persona", "spec", "memory", "knowledge"];
 const HEADINGS: Record<Fragment["type"], string> = {
   rule: "Rules (always apply)",
   persona: "Persona",
   spec: "Active specs",
+  memory: "Project memory",
   knowledge: "Reference knowledge",
 };
 

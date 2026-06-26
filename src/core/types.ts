@@ -6,15 +6,17 @@ import { z } from "zod";
  *  - knowledge: static reference data, loaded lazily
  *  - spec:      current task requirements
  *  - persona:   a swappable agent "hat"
+ *  - memory:    decisions, logs, and state
  */
-export const FragmentType = z.enum(["rule", "knowledge", "spec", "persona"]);
+export const FragmentType = z.enum(["rule", "knowledge", "spec", "persona", "memory"]);
 export type FragmentType = z.infer<typeof FragmentType>;
 
 /** Default precedence used when ordering matched fragments for a pack. */
 export const TYPE_PRECEDENCE: Record<FragmentType, number> = {
-  rule: 3,
-  spec: 2,
-  persona: 1,
+  rule: 4,
+  spec: 3,
+  persona: 2,
+  memory: 1,
   knowledge: 0,
 };
 
