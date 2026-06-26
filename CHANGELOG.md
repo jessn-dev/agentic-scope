@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/jessn-dev/agentic-scope/compare/v1.0.0...v1.1.0) (2026-06-26)
+
+
+### Features
+
+* add `build --check` to verify vendor files are in sync ([275fe1b](https://github.com/jessn-dev/agentic-scope/commit/275fe1b3ecef9af9cc0365b347125ef99b054552))
+
 # [1.0.0](https://github.com/jessn-dev/agentic-scope/compare/v0.2.1...v1.0.0) (2026-06-24)
 
 First stable release: the CLI surface, MCP tool surface, and manifest schema are
