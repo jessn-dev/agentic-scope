@@ -14,3 +14,7 @@ AGENTS.md
 
 # Personal, machine-local context
 .scope/memory/user.md
+
+# VitePress
+docs/.vitepress/dist
+docs/.vitepress/cache
