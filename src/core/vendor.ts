@@ -112,3 +112,26 @@ export function build(loaded: LoadedManifest, targets = VENDOR_TARGETS): BuildRe
   }
   return { written };
 }
+
+export type VendorStatus = "ok" | "stale" | "missing";
+export interface VendorCheck {
+  file: string;
+  label: string;
+  status: VendorStatus;
+}
+
+/**
+ * Check whether the on-disk vendor files match what `.scope/` would compile to,
+ * without writing anything. Lets CI fail when generated files have drifted from
+ * their source (`status: "stale"`) or were never built (`status: "missing"`).
+ */
+export function checkBuild(loaded: LoadedManifest, targets = VENDOR_TARGETS): VendorCheck[] {
+  return targets.map((t) => {
+    const path = join(loaded.root, t.file);
+    const expected = compile(loaded, t);
+    let status: VendorStatus;
+    if (!existsSync(path)) status = "missing";
+    else status = readFileSync(path, "utf8") === expected ? "ok" : "stale";
+    return { file: t.file, label: t.label, status };
+  });
+}

@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { loadManifest, MANIFEST_FILENAME, isProject } from "./core/manifest.js";
 import { pack, renderPack, oversizedFragments } from "./core/fragments.js";
-import { build, VENDOR_TARGETS, resolveTargets } from "./core/vendor.js";
+import { build, checkBuild, VENDOR_TARGETS, resolveTargets } from "./core/vendor.js";
 import { writeSchema, SCHEMA_PATH } from "./core/schema.js";
 
 // Single source of truth for the version: package.json (kept in sync by semantic-release).
@@ -90,7 +90,8 @@ program
     "-t, --target <name...>",
     `Only build these vendors (${VENDOR_TARGETS.map((t) => t.name).join(", ")})`,
   )
-  .action((dir: string, opts: { target?: string[] }) => {
+  .option("--check", "Verify vendor files are up to date with .scope/ (no writes); exit 1 if stale/missing")
+  .action((dir: string, opts: { target?: string[]; check?: boolean }) => {
     const loaded = loadManifest(resolve(dir));
     let targets;
     try {
@@ -98,6 +99,19 @@ program
     } catch (err) {
       console.error(`✗ ${err instanceof Error ? err.message : err}`);
       process.exit(1);
+    }
+    if (opts.check) {
+      const results = checkBuild(loaded, targets);
+      for (const r of results) {
+        console.log(`  ${r.status === "ok" ? "✓" : "✗"} ${r.file}  (${r.status})`);
+      }
+      const drift = results.filter((r) => r.status !== "ok");
+      if (drift.length > 0) {
+        console.error(`✗ ${drift.length} vendor file(s) out of date — run \`agenticscope build\` and commit.`);
+        process.exit(1);
+      }
+      console.log("✓ Vendor files are up to date.");
+      return;
     }
     const { written } = build(loaded, targets);
     console.log(`✓ Built ${written.length} vendor file(s):`);
