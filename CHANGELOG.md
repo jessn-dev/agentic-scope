@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jessn-dev/agentic-scope/compare/v1.1.0...v1.1.1) (2026-06-26)
+
+
+### Bug Fixes
+
+* add memory fragment type and gracefully format validation errors ([d06103f](https://github.com/jessn-dev/agentic-scope/commit/d06103f3e583b2b6e5f06f5e242b49a02d24264f)), closes [#3](https://github.com/jessn-dev/agentic-scope/issues/3) [#4](https://github.com/jessn-dev/agentic-scope/issues/4)
+
 # [1.1.0](https://github.com/jessn-dev/agentic-scope/compare/v1.0.0...v1.1.0) (2026-06-26)
 
 
