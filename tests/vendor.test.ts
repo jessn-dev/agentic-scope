@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { compile, build, resolveTargets, VENDOR_TARGETS } from "../src/core/vendor.js";
+import { compile, build, checkBuild, resolveTargets, VENDOR_TARGETS } from "../src/core/vendor.js";
 import { makeProject } from "./fixture.js";
 
 let cleanup = () => {};
@@ -70,5 +70,23 @@ describe("vendor build", () => {
 
   it("resolveTargets rejects an unknown vendor", () => {
     expect(() => resolveTargets(["nope"])).toThrow(/Unknown vendor target/);
+  });
+
+  it("checkBuild reports missing, then ok after build, then stale after edit", () => {
+    const fx = makeProject(MANIFEST, FILES);
+    cleanup = fx.cleanup;
+
+    // Nothing built yet → all missing.
+    expect(checkBuild(fx.loaded).every((c) => c.status === "missing")).toBe(true);
+
+    // After build → all ok.
+    build(fx.loaded);
+    expect(checkBuild(fx.loaded).every((c) => c.status === "ok")).toBe(true);
+
+    // Tamper with one generated file → that one is stale, the rest ok.
+    writeFileSync(join(fx.root, "CLAUDE.md"), "hand-edited, now drifted", "utf8");
+    const after = checkBuild(fx.loaded);
+    expect(after.find((c) => c.file === "CLAUDE.md")!.status).toBe("stale");
+    expect(after.filter((c) => c.status === "ok").length).toBe(VENDOR_TARGETS.length - 1);
   });
 });

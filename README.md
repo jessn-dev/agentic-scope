@@ -161,7 +161,7 @@ agenticscope pack "refactor handler" -p src/api/handler.ts -p src/db/schema.sql
 | :--- | :--- |
 | `agenticscope init [dir]` | Scaffold a manifest + `.scope/` tree |
 | `agenticscope lint [dir]` | Validate the manifest; flag missing paths, dupe ids, dead fragments, and fragments too big for the budget |
-| `agenticscope build [dir]` | Compile `.scope/` into vendor files (`-t, --target claude\|gemini\|agents\|cursor` to pick a subset) |
+| `agenticscope build [dir]` | Compile `.scope/` into vendor files (`-t, --target claude\|gemini\|agents\|cursor` to pick a subset; `--check` to verify they're up to date without writing — exits non-zero if stale, ideal for CI) |
 | `agenticscope pack <task...>` | Resolve a task into a budgeted context block (`-d` dir, `-p` paths, `-b, --budget` override, `--exact` tokenizer, `--raw`) |
 | `agenticscope schema [dir]` | Generate `schema/manifest.schema.json` for TOML editor autocomplete (`-o` out path) |
 | `agenticscope mcp-config` | Print ready-to-paste MCP config (`--workspace`, `--host claude\|cursor\|generic`) |
