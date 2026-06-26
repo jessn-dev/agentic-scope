@@ -2,10 +2,29 @@
 
 **A directory-as-context standard plus a read-only MCP server that gives any AI agent live, structured awareness of your workspace — without burning your tokens re-reading everything.**
 
-[![npm version](https://img.shields.io/npm/v/agenticscope.svg)](https://www.npmjs.com/package/agenticscope)
-[![CI](https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml/badge.svg)](https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/agenticscope.svg)](./LICENSE)
-[![node](https://img.shields.io/node/v/agenticscope.svg)](https://nodejs.org)
+<div align="left">
+  <!-- Core Identity & Publishing -->
+  <a href="https://www.npmjs.com/package/agenticscope"><img src="https://img.shields.io/npm/v/agenticscope?style=for-the-badge&logo=npm" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/package/agenticscope"><img src="https://img.shields.io/npm/dt/agenticscope?style=for-the-badge&logo=npm" alt="NPM Downloads" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/agenticscope?style=for-the-badge&logo=nodedotjs" alt="Node Version" /></a>
+  <br/>
+  <!-- Build, Quality & Security -->
+  <a href="https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/jessn-dev/agentic-scope/ci.yml?branch=main&style=for-the-badge&logo=github" alt="CI Status" /></a>
+  <a href="https://snyk.io/test/github/jessn-dev/agentic-scope"><img src="https://img.shields.io/snyk/vulnerabilities/github/jessn-dev/agentic-scope?style=for-the-badge" alt="Snyk Vulnerabilities" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript" alt="TypeScript" /></a>
+  <a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/semantic--release-active-e10079?style=for-the-badge&logo=semantic-release" alt="Semantic Release" /></a>
+  <br/>
+  <!-- Development & Activity Stats -->
+  <a href="https://github.com/jessn-dev/agentic-scope/commits/main"><img src="https://img.shields.io/github/last-commit/jessn-dev/agentic-scope?style=for-the-badge" alt="Last Commit" /></a>
+  <a href="https://github.com/jessn-dev/agentic-scope/issues"><img src="https://img.shields.io/github/issues/jessn-dev/agentic-scope?style=for-the-badge" alt="Open Issues" /></a>
+  <a href="https://github.com/jessn-dev/agentic-scope/pulls"><img src="https://img.shields.io/github/issues-pr/jessn-dev/agentic-scope?style=for-the-badge" alt="Pull Requests" /></a>
+  <a href="https://github.com/jessn-dev/agentic-scope"><img src="https://img.shields.io/github/repo-size/jessn-dev/agentic-scope?style=for-the-badge" alt="Repo Size" /></a>
+  <br/>
+  <!-- Visitors & License -->
+  <a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fjessn-dev%2Fagentic-scope"><img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fjessn-dev%2Fagentic-scope&countColor=%23263759&style=for-the-badge" alt="Visitor Count" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/npm/l/agenticscope?style=for-the-badge" alt="License" /></a>
+  <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome" /></a>
+</div>
 
 > **License:** MIT · **Requires:** Node.js ≥ 22 · Published to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
 
