@@ -10,7 +10,7 @@
   <br/>
   <!-- Build, Quality & Security -->
   <a href="https://github.com/jessn-dev/agentic-scope/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/jessn-dev/agentic-scope/ci.yml?branch=main&style=for-the-badge&logo=github" alt="CI Status" /></a>
-  <a href="https://snyk.io/test/github/jessn-dev/agentic-scope"><img src="https://img.shields.io/snyk/vulnerabilities/github/jessn-dev/agentic-scope?style=for-the-badge" alt="Snyk Vulnerabilities" /></a>
+  <a href="https://snyk.io/test/npm/agenticscope"><img src="https://img.shields.io/snyk/vulnerabilities/npm/agenticscope?style=for-the-badge" alt="Snyk Vulnerabilities" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript" alt="TypeScript" /></a>
   <a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/semantic--release-active-e10079?style=for-the-badge&logo=semantic-release" alt="Semantic Release" /></a>
   <br/>
